@@ -4,7 +4,7 @@
 #include <Windows.h>
 #include <math.h>
 #include <GL/glut.h>
-#include <GravitySim.h>
+#include "GravitySim.h"
 
 glColor colorSunCenter{0.9765f, 0.7343f, 0.3007f};
 glColor colorSunBorder{0.9257f, 0.3125f, 0.0039f};
@@ -108,11 +108,17 @@ void renderScene(void)
 	glutSwapBuffers();
 }
 
-void changeSize(int _w, int _h) {
+void changeSize(int _w, int _h)
+{
 	winWidth = _w;
 	winHeight = _h;
 	glViewport(0, 0, _w, _h);
 	std::cout << "Width: " << _w << "\tHeight: " << _h << "\n";
+}
+
+void renderBody(CosmicBody* body)
+{
+	drawCircle(200, 200, body->getRadius(), body->getInnerColor(), body->getExternColor());
 }
 
 int main(int argc, char** argv)
@@ -130,6 +136,9 @@ int main(int argc, char** argv)
 	glutDisplayFunc(renderScene);
 	glutReshapeFunc(changeSize);
 	glutIdleFunc(renderScene);
+
+	CosmicBody sun(200, 100, Vector2d(10, 3), colorSunCenter, colorSunBorder);
+	renderBody(&sun);
 
 	glutMainLoop();
 
