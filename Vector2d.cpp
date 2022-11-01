@@ -31,7 +31,7 @@ float Vector2d::getY()
 
 float Vector2d::module()
 {
-	return sqrt(m_x * m_x + m_y + m_y);
+	return sqrt(m_x * m_x + m_y * m_y);
 }
 
 void Vector2d::normalize()

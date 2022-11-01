@@ -17,16 +17,20 @@ CosmicBody::CosmicBody(CosmicBody* _cosmicBody)
 	m_externColor = _cosmicBody->getExternColor();
 }
 
-CosmicBody::CosmicBody(float _mass, float _radius, float _xSpeed, float _ySpeed, glColor _color)
+CosmicBody::CosmicBody(float _xpos, float _ypos, float _mass, float _radius, float _xSpeed, float _ySpeed, glColor _color)
 {
+	m_xpos = _xpos;
+	m_ypos = _ypos;
 	m_mass = _mass;
 	m_radius = _radius;
 	m_speed = Vector2d(_xSpeed, _ySpeed);
 	m_innerColor = m_externColor = _color;
 }
 
-CosmicBody::CosmicBody(float _mass, float _radius, float _xSpeed, float _ySpeed, glColor _innerColor, glColor _externColor)
+CosmicBody::CosmicBody(float _xpos, float _ypos, float _mass, float _radius, float _xSpeed, float _ySpeed, glColor _innerColor, glColor _externColor)
 {
+	m_xpos = _xpos;
+	m_ypos = _ypos;
 	m_mass = _mass;
 	m_radius = _radius;
 	m_speed = Vector2d(_xSpeed, _ySpeed);
@@ -34,21 +38,35 @@ CosmicBody::CosmicBody(float _mass, float _radius, float _xSpeed, float _ySpeed,
 	m_externColor = _externColor;
 }
 
-CosmicBody::CosmicBody(float _mass, float _radius, Vector2d _speed, glColor _color)
+CosmicBody::CosmicBody(float _xpos, float _ypos, float _mass, float _radius, Vector2d _speed, glColor _color)
 {
+	m_xpos = _xpos;
+	m_ypos = _ypos;
 	m_mass = _mass;
 	m_radius = _radius;
 	m_speed = _speed;
 	m_innerColor = m_externColor = _color;
 }
 
-CosmicBody::CosmicBody(float _mass, float _radius, Vector2d _speed, glColor _innerColor, glColor _externColor)
+CosmicBody::CosmicBody(float _xpos, float _ypos, float _mass, float _radius, Vector2d _speed, glColor _innerColor, glColor _externColor)
 {
+	m_xpos = _xpos;
+	m_ypos = _ypos;
 	m_mass = _mass;
 	m_radius = _radius;
 	m_speed = _speed;
 	m_innerColor = _innerColor;
 	m_externColor = _externColor;
+}
+
+float CosmicBody::getXpos()
+{
+	return m_xpos;
+}
+
+float CosmicBody::getYpos()
+{
+	return m_ypos;
 }
 
 double CosmicBody::getMass()
@@ -74,6 +92,12 @@ glColor CosmicBody::getExternColor()
 Vector2d CosmicBody::getSpeed()
 {
 	return m_speed;
+}
+
+void CosmicBody::proceed()
+{
+	m_xpos += m_speed.getX();
+	m_ypos += m_speed.getY();
 }
 
 void CosmicBody::applyForce(Force _force)

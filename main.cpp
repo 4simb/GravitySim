@@ -9,6 +9,8 @@
 glColor colorSunCenter{0.9765f, 0.7343f, 0.3007f};
 glColor colorSunBorder{0.9257f, 0.3125f, 0.0039f};
 
+CosmicBody sun(800.f, 400.f, 20000000.f, 100.f, Vector2d(0, 0), colorSunCenter, colorSunBorder);
+
 volatile int winWidth = 1900, winHeight = 1000;
 
 float map(float x, float in_min, float in_max, float out_min, float out_max) {
@@ -85,6 +87,11 @@ void drawCircle(float x, float y, float r, glColor color)
 	glEnd();
 }
 
+void renderBody(CosmicBody* body)
+{
+	drawCircle(body->getXpos(), body->getYpos(), body->getRadius(), body->getInnerColor(), body->getExternColor());
+}
+
 void renderScene(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -96,14 +103,15 @@ void renderScene(void)
 
 	static int i = 0;
 
-	//glColor3f((float)i / 600.f, 0.5, 1.f - (float)i / 600.f);
-	//drawEmptyCircle(100, 100, i, 0);
-	//Sleep(2);
-	//
-	//i++;
-	//if (i > 600) i = 0;
+	Force force(4, 3, 20.f);
 
-	drawCircle(350, 200, 300, colorSunCenter, colorSunBorder);
+
+	force.normalize();
+
+	sun.applyForce(force);
+	sun.proceed();
+
+	renderBody(&sun);
 
 	glutSwapBuffers();
 }
@@ -116,10 +124,6 @@ void changeSize(int _w, int _h)
 	std::cout << "Width: " << _w << "\tHeight: " << _h << "\n";
 }
 
-void renderBody(CosmicBody* body)
-{
-	drawCircle(200, 200, body->getRadius(), body->getInnerColor(), body->getExternColor());
-}
 
 int main(int argc, char** argv)
 {
@@ -136,9 +140,6 @@ int main(int argc, char** argv)
 	glutDisplayFunc(renderScene);
 	glutReshapeFunc(changeSize);
 	glutIdleFunc(renderScene);
-
-	CosmicBody sun(200, 100, Vector2d(10, 3), colorSunCenter, colorSunBorder);
-	renderBody(&sun);
 
 	glutMainLoop();
 
