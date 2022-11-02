@@ -7,6 +7,7 @@ public:
 	Force(float _x, float _y, float _value);
 	Force(Force* _force);
 
+	void setValue(float _value);
 	void normalize(); // normalized * value
 
 	~Force();

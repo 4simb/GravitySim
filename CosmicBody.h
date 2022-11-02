@@ -19,13 +19,26 @@ public:
 	glColor getInnerColor();
 	glColor getExternColor();
 	Vector2d getSpeed();
+	bool isMoovable();
+
+	void setXpos(float _xpos);
+	void setYpod(float _ypos);
+	void setMass(float _mass);
+	void setRadius(float _radius);
+	void setColor(glColor _color);
+	void setInnerCoolor(glColor _innerColor);
+	void setExternColor(glColor _externColor);
+	void setSpeed(Vector2d _speed);
+	void setSpeed(float _xspeed, float _yspeed);
+	void setMoovable(bool _moovable);
 
 	virtual void proceed();
-	virtual void applyForce(Force _force);
+	virtual void applyForce(Force* _force);
 
 	~CosmicBody();
 
 private:
+	bool m_moovable = true;
 	float m_xpos;
 	float m_ypos;
 	double m_mass;

@@ -21,11 +21,22 @@ Force::Force(Force* _force)
 	m_value = _force->m_value;
 }
 
+void Force::setValue(float _value)
+{
+	m_value = _value;
+}
+
 void Force::normalize()
 {
 	float mod = module() / m_value;
 	//m_x /= mod;
 	//m_y /= mod;
+	if (mod == 0) {
+		setX(0);
+		setY(0);
+		return;
+	}
+
 	setX(getX() / mod);
 	setY(getY() / mod);
 }

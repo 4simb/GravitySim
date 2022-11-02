@@ -1,3 +1,4 @@
+#include <iostream>
 #include "CosmicBody.h"
 
 CosmicBody::CosmicBody()
@@ -94,17 +95,76 @@ Vector2d CosmicBody::getSpeed()
 	return m_speed;
 }
 
-void CosmicBody::proceed()
+bool CosmicBody::isMoovable()
 {
-	m_xpos += m_speed.getX();
-	m_ypos += m_speed.getY();
+	return m_moovable;
 }
 
-void CosmicBody::applyForce(Force _force)
+void CosmicBody::setXpos(float _xpos)
+{
+	m_xpos = _xpos;
+}
+
+void CosmicBody::setYpod(float _ypos)
+{
+	m_ypos = _ypos;
+}
+
+void CosmicBody::setMass(float _mass)
+{
+	if (_mass > 0)m_mass = _mass;
+}
+
+void CosmicBody::setRadius(float _radius)
+{
+	if (_radius > 0) m_radius = _radius;
+}
+
+void CosmicBody::setColor(glColor _color)
+{
+	m_innerColor = m_externColor = _color;
+}
+
+void CosmicBody::setInnerCoolor(glColor _innerColor)
+{
+	m_innerColor = _innerColor;
+}
+
+void CosmicBody::setExternColor(glColor _externColor)
+{
+	m_externColor = _externColor;
+}
+
+void CosmicBody::setSpeed(Vector2d _speed)
+{
+	m_speed = _speed;
+}
+
+void CosmicBody::setSpeed(float _xspeed, float _yspeed)
+{
+	m_speed.setX(_xspeed);
+	m_speed.setY(_yspeed);
+}
+
+void CosmicBody::setMoovable(bool _moovable)
+{
+	m_moovable = _moovable;
+}
+
+void CosmicBody::proceed()
+{
+	if (!this->isMoovable()) return;
+	m_xpos += m_speed.getX();
+	m_ypos += m_speed.getY();
+	//std::cout << m_xpos << "\t" << m_ypos << "\n";
+}
+
+void CosmicBody::applyForce(Force* _force)
 {
 	// a = F/m
-	m_speed.setX(m_speed.getX() + _force.getX() / m_mass);
-	m_speed.setY(m_speed.getY() + _force.getY() / m_mass);
+	if (!this->isMoovable()) return;
+	m_speed.setX(m_speed.getX() + _force->getX() / m_mass);
+	m_speed.setY(m_speed.getY() + _force->getY() / m_mass);
 }
 
 CosmicBody::~CosmicBody()
