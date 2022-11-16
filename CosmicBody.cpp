@@ -105,7 +105,7 @@ void CosmicBody::setXpos(float _xpos)
 	m_xpos = _xpos;
 }
 
-void CosmicBody::setYpod(float _ypos)
+void CosmicBody::setYpos(float _ypos)
 {
 	m_ypos = _ypos;
 }

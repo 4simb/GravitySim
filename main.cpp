@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <chrono>
+#include <thread>
 #include <string>
 #include <stdlib.h>
 #include <Windows.h>
@@ -14,14 +15,17 @@
 #define G 2
 
 volatile int winWidth = 1900, winHeight = 1000;
-volatile float mouseX = 0, mouseY = 0;
+volatile float mouseX = (float)winWidth / 2, mouseY = (float)winHeight / 2;
 
 int fps = 0;
 long long elapsedTime = 0;
 
+bool cursorAdded = false;
+
 glColor colorSunCenter{0.9765f, 0.7343f, 0.3007f};
 glColor colorSunBorder{0.9257f, 0.3125f, 0.0039f};
 
+CosmicBody cursor(20, 20, 300.f, 25.f, 0, 0, colorSunCenter, colorSunBorder);
 CosmicBody moon(winWidth / 2, winHeight / 2 - 300, 200, 25.f, Vector2d(-5.5f, 0)); //7.36e23f
 CosmicBody earth(winWidth / 2.f, winHeight / 2.f + 400, 300, 25.f, Vector2d(6.5f, 0), glColor{0.f, 0.33f, 0.33f}); //5.97e24
 CosmicBody sun(winWidth / 2.f, winHeight / 2.f, 1500, 60.f, Vector2d(0, 0), colorSunCenter, colorSunBorder); // 1.9889e30
@@ -137,6 +141,7 @@ void applyForces()
 	{
 		for (int j = i + 1; j < Bodies.size(); j++)
 		{
+			// 45150 for 301 body takes ~60ms avg
 			float deltax = Bodies[j].getXpos() - Bodies[i].getXpos();
 			float deltay = Bodies[j].getYpos() - Bodies[i].getYpos();
 			if (abs(deltax) < 10) deltax = (deltax > 0 ? 10 : -10);
@@ -145,8 +150,10 @@ void applyForces()
 
 			Force forceij(&dist, G * Bodies[i].getMass() * Bodies[j].getMass() / (pow(dist.module(), 2)));
 			forceij.normalize();
-
 			Bodies[i].applyForce(&forceij);
+
+			forceij.setX(-forceij.getX());
+			forceij.setY(-forceij.getY());
 			Bodies[j].applyForce(&forceij);
 		}
 	}
@@ -186,25 +193,31 @@ void renderScene()
 	fps = 1e6f / (std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - timer)).count() + 0.5f;
 	if (fps > 60) return;
 	timer = std::chrono::high_resolution_clock::now();
-	
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	// обнуление трансформации
 	glLoadIdentity();
 
-	glColor3f(0.75, 0.75, 0.75);
+	glColor3f(0.15, 0.75, 0.15);
 
 	//static int i = 0;
-	applyForces();
+	applyForces(); // 55ms
+
+	//drawBodies();
 
 	for (int i = 0; i < Bodies.size(); i++)
 	{
+		if (i == Bodies.size() - 1)
+		{
+
+		}
 		Bodies[i].proceed();
 		renderBody(&Bodies[i]);
 	}
 
-	drawString(winWidth - 50, winHeight - 30, -1, std::to_string(fps));
-
+	glColor3f(0.1, 0.9, 0.1);
+	drawString(winWidth - 50, winHeight - 50, -1, std::to_string(fps));
 	glutSwapBuffers();
 }
 
@@ -223,8 +236,15 @@ void processMouse(int button, int state, int x, int y)
 
 void processMouseMotion(int x, int y)
 {
+	if (!cursorAdded) {
+		Bodies.push_back(cursor);
+		cursorAdded = true;
+	}
 	mouseX = x;
 	mouseY = y;
+	Bodies[Bodies.size() - 1].setXpos(mouseX);
+	Bodies[Bodies.size() - 1].setYpos(mouseY);
+	//std::cout << cursor.getXpos() << "\t" << cursor.getYpos() << "\n";
 }
 
 int main(int argc, char** argv)
@@ -234,7 +254,7 @@ int main(int argc, char** argv)
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(0, 70);
 	glutInitWindowSize(winWidth, winHeight);
-	glutCreateWindow("gravsim");
+	glutCreateWindow("gravsim 400 bodies");
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 
@@ -251,21 +271,19 @@ int main(int argc, char** argv)
 	std::tm* now = std::localtime(&t);
 	srand(now->tm_sec);
 
-	//sun.setMoovable(false);
-	//Bodies.push_back(sun);
-	//Bodies.push_back(earth);
-	//Bodies.push_back(moon);
-
-	for (int i = 0; i < 300; i++)
+	for (int i = 0; i < 400; i++)
 	{
-		CosmicBody body(475 + rand() % 950, 250 + rand() % 500, 0.1, 5, Vector2d{-5.f + (rand() % 1000) / 100.f, -5.f + (rand() % 1000) / 100.f}, glColor{0.25f + rand() % 5000 / 10000.f, 0.25f + rand() % 5000 / 10000.f, 0.25f + rand() % 5000 / 10000.f}, glColor{0.25f + rand() % 5000 / 10000.f, 0.25f + rand() % 5000 / 10000.f, 0.25f + rand() % 5000 / 10000.f});
+		CosmicBody body(100 + rand() % 1700, 50 + rand() % 900, 1.9f, 4.5f, Vector2d{0, 0}, glColor{0.25f + rand() % 5000 / 10000.f, 0.25f + rand() % 5000 / 10000.f, 0.25f + rand() % 5000 / 10000.f}, glColor{0.25f + rand() % 5000 / 10000.f, 0.25f + rand() % 5000 / 10000.f, 0.25f + rand() % 5000 / 10000.f});
+		//Vector2d{-5.f + (rand() % 1000) / 100.f, -5.f + (rand() % 1000) / 100.f}
 		//CosmicBody body(rand() % 1900, rand() % 1000, (long long)10e21 * rand() % 50, 1 + rand() % 10, Vector2d{0, 0}, glColor{rand() % 1000 / 1000.f, rand() % 1000 / 1000.f, rand() % 1000 / 1000.f});
 		Bodies.push_back(body);
 	}
 	sun.setMoovable(false);
 	//Bodies.push_back(earth);
 	//Bodies.push_back(moon);
-	Bodies.push_back(sun);
+	//Bodies.push_back(sun);
+	cursor.setMoovable(false);
+	//Bodies.push_back(cursor);
 
 	glutMainLoop();
 

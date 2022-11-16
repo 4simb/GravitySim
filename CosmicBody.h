@@ -22,7 +22,7 @@ public:
 	bool isMoovable();
 
 	void setXpos(float _xpos);
-	void setYpod(float _ypos);
+	void setYpos(float _ypos);
 	void setMass(float _mass);
 	void setRadius(float _radius);
 	void setColor(glColor _color);
