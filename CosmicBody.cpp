@@ -18,20 +18,20 @@ CosmicBody::CosmicBody(CosmicBody* _cosmicBody)
 	m_externColor = _cosmicBody->getExternColor();
 }
 
-CosmicBody::CosmicBody(float _xpos, float _ypos, float _mass, float _radius, float _xSpeed, float _ySpeed, glColor _color)
+CosmicBody::CosmicBody(float _xPos, float _yPos, float _mass, float _radius, float _xSpeed, float _ySpeed, glColor _color, uint8_t FLAG)
 {
-	m_xpos = _xpos;
-	m_ypos = _ypos;
+	m_xPos = _xPos;
+	m_yPos = _yPos;
 	m_mass = _mass;
 	m_radius = _radius;
 	m_speed = Vector2d(_xSpeed, _ySpeed);
 	m_innerColor = m_externColor = _color;
 }
 
-CosmicBody::CosmicBody(float _xpos, float _ypos, float _mass, float _radius, float _xSpeed, float _ySpeed, glColor _innerColor, glColor _externColor)
+CosmicBody::CosmicBody(float _xPos, float _yPos, float _mass, float _radius, float _xSpeed, float _ySpeed, glColor _innerColor, glColor _externColor, uint8_t FLAG)
 {
-	m_xpos = _xpos;
-	m_ypos = _ypos;
+	m_xPos = _xPos;
+	m_yPos = _yPos;
 	m_mass = _mass;
 	m_radius = _radius;
 	m_speed = Vector2d(_xSpeed, _ySpeed);
@@ -39,20 +39,20 @@ CosmicBody::CosmicBody(float _xpos, float _ypos, float _mass, float _radius, flo
 	m_externColor = _externColor;
 }
 
-CosmicBody::CosmicBody(float _xpos, float _ypos, float _mass, float _radius, Vector2d _speed, glColor _color)
+CosmicBody::CosmicBody(float _xPos, float _yPos, float _mass, float _radius, Vector2d _speed, glColor _color, uint8_t FLAG)
 {
-	m_xpos = _xpos;
-	m_ypos = _ypos;
+	m_xPos = _xPos;
+	m_yPos = _yPos;
 	m_mass = _mass;
 	m_radius = _radius;
 	m_speed = _speed;
 	m_innerColor = m_externColor = _color;
 }
 
-CosmicBody::CosmicBody(float _xpos, float _ypos, float _mass, float _radius, Vector2d _speed, glColor _innerColor, glColor _externColor)
+CosmicBody::CosmicBody(float _xPos, float _yPos, float _mass, float _radius, Vector2d _speed, glColor _innerColor, glColor _externColor, uint8_t FLAG)
 {
-	m_xpos = _xpos;
-	m_ypos = _ypos;
+	m_xPos = _xPos;
+	m_yPos = _yPos;
 	m_mass = _mass;
 	m_radius = _radius;
 	m_speed = _speed;
@@ -62,12 +62,12 @@ CosmicBody::CosmicBody(float _xpos, float _ypos, float _mass, float _radius, Vec
 
 float CosmicBody::getXpos()
 {
-	return m_xpos;
+	return m_xPos;
 }
 
 float CosmicBody::getYpos()
 {
-	return m_ypos;
+	return m_yPos;
 }
 
 double CosmicBody::getMass()
@@ -100,14 +100,14 @@ bool CosmicBody::isMoovable()
 	return m_moovable;
 }
 
-void CosmicBody::setXpos(float _xpos)
+void CosmicBody::setXpos(float _xPos)
 {
-	m_xpos = _xpos;
+	m_xPos = _xPos;
 }
 
-void CosmicBody::setYpos(float _ypos)
+void CosmicBody::setYpos(float _yPos)
 {
-	m_ypos = _ypos;
+	m_yPos = _yPos;
 }
 
 void CosmicBody::setMass(float _mass)
@@ -154,9 +154,9 @@ void CosmicBody::setMoovable(bool _moovable)
 void CosmicBody::proceed()
 {
 	if (!this->isMoovable()) return;
-	m_xpos += m_speed.getX();
-	m_ypos += m_speed.getY();
-	//std::cout << m_xpos << "\t" << m_ypos << "\n";
+	m_xPos += m_speed.getX();
+	m_yPos += m_speed.getY();
+	//std::cout << m_xPos << "\t" << m_yPos << "\n";
 }
 
 void CosmicBody::applyForce(Force* _force)
@@ -165,6 +165,10 @@ void CosmicBody::applyForce(Force* _force)
 	if (!this->isMoovable()) return;
 	m_speed.setX(m_speed.getX() + _force->getX() / m_mass);
 	m_speed.setY(m_speed.getY() + _force->getY() / m_mass);
+}
+
+void CosmicBody::applyAcceleration(Vector2d _acceleration) {
+	m_speed.setX(m_speed.getX() + _acceleration.getX());
 }
 
 CosmicBody::~CosmicBody()

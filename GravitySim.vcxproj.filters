@@ -27,6 +27,18 @@
     <ClCompile Include="Force.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GravitySimMath.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GravitySimGraphics.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GravitySimMath.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GravitySimGraphics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CosmicBody.h">

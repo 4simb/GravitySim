@@ -1,21 +1,18 @@
 ﻿#define _USE_MATH_DEFINES
 #define _CRT_SECURE_NO_WARNINGS
 
-#include <iostream>
-#include <vector>
-#include <chrono>
-#include <thread>
-#include <string>
-#include <stdlib.h>
-#include <Windows.h>
-#include <math.h>
 #include <GL/glut.h>
+
 #include "GravitySim.h"
 
 #define G 2
+#define BODY_AMOUNT 1500
 
-volatile int winWidth = 1900, winHeight = 1000;
-volatile float mouseX = (float)winWidth / 2, mouseY = (float)winHeight / 2;
+//volatile int win.w = WIN_WIDTH, win.h = WIN_HEIGHT;
+
+winSize win{ 1900, 1000 };
+
+volatile float mouseX = (float)win.w / 2, mouseY = (float)win.h / 2;
 
 int fps = 0;
 long long elapsedTime = 0;
@@ -26,114 +23,14 @@ glColor colorSunCenter{0.9765f, 0.7343f, 0.3007f};
 glColor colorSunBorder{0.9257f, 0.3125f, 0.0039f};
 
 CosmicBody cursor(20, 20, 300.f, 25.f, 0, 0, colorSunCenter, colorSunBorder);
-CosmicBody moon(winWidth / 2, winHeight / 2 - 300, 200, 25.f, Vector2d(-5.5f, 0)); //7.36e23f
-CosmicBody earth(winWidth / 2.f, winHeight / 2.f + 400, 300, 25.f, Vector2d(6.5f, 0), glColor{0.f, 0.33f, 0.33f}); //5.97e24
-CosmicBody sun(winWidth / 2.f, winHeight / 2.f, 1500, 60.f, Vector2d(0, 0), colorSunCenter, colorSunBorder); // 1.9889e30
-CosmicBody sun1(winWidth / 2.f + 400, winHeight / 2.f, 1500, 60.f, Vector2d(0, -6.5f), colorSunCenter, colorSunBorder);
+CosmicBody moon(win.w / 2, win.h / 2 - 300, 200, 25.f, Vector2d(-5.5f, 0)); //7.36e23f
+CosmicBody earth(win.w / 2.f, win.h / 2.f + 400, 300, 25.f, Vector2d(6.5f, 0), glColor{0.f, 0.33f, 0.33f}); //5.97e24
+CosmicBody sun(win.w / 2.f, win.h / 2.f, 1500, 60.f, Vector2d(0, 0), colorSunCenter, colorSunBorder); // 1.9889e30
+CosmicBody sun1(win.w / 2.f + 400, win.h / 2.f, 1500, 60.f, Vector2d(0, -6.5f), colorSunCenter, colorSunBorder);
 
 std::vector<CosmicBody> Bodies;
 
 std::chrono::high_resolution_clock::time_point timer;
-
-float map(float x, float in_min, float in_max, float out_min, float out_max) {
-	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
-
-float crdX(float coord, int _winWidth) {
-	return map(coord, 0, _winWidth, -1, 1);
-}
-
-float crdY(float coord, int _winHeight) {
-	return map(coord, 0, _winHeight, -1, 1);
-}
-
-void glPoint(float x, float y) {
-	glVertex3f(crdX(x, winWidth), -crdY(y, winHeight), -1);
-}
-
-void drawEmptyCircle(float x, float y, float r, int w)
-{
-	int dots = 2.f * M_PI * r + 1;
-	float delta = 2 * M_PI / dots;
-
-	glLineWidth(w);
-
-	glBegin(GL_LINE_LOOP);
-	for (int angle = 0; angle < dots; angle++)
-	{
-		float rad = angle * delta;
-		glPoint(x + cosf(rad) * r, y + sinf(rad) * r);
-	}
-	glEnd();
-}
-
-void drawCircle(float x, float y, float r, glColor innerColor, glColor externColor)
-{
-	int dots = 2.f * M_PI * r + 1;
-	float delta = 2 * M_PI / dots;
-
-	glLineWidth(1.5);
-
-	glBegin(GL_LINE_STRIP);
-	
-	for (int angle = 0; angle < dots; angle++)
-	{
-		float rad = angle * delta;
-		glColor3f(innerColor.m_red, innerColor.m_green, innerColor.m_blue);
-		glPoint(x, y);
-		glColor3f(externColor.m_red, externColor.m_green, externColor.m_blue);
-		glPoint(x + cosf(rad) * r, y + sinf(rad) * r);
-	}
-	
-	glEnd();
-}
-
-void drawCircle(float x, float y, float r, glColor color)
-{
-	int dots = 2.f * M_PI * r + 1;
-	float delta = 2 * M_PI / dots;
-
-	glLineWidth(1.5);
-
-	glBegin(GL_LINE_STRIP);
-	glColor3f(color.m_red, color.m_green, color.m_blue);
-
-	for (int angle = 0; angle < dots; angle++)
-	{
-		float rad = angle * delta;
-		
-		glPoint(x, y);
-		glPoint(x + cosf(rad) * r, y + sinf(rad) * r);
-	}
-
-	glEnd();
-}
-
-void renderBody(CosmicBody* body)
-{
-	drawCircle(body->getXpos() * 2, body->getYpos() * 2, body->getRadius(), body->getInnerColor(), body->getExternColor());
-}
-
-void drawString(float x, float y, float z, const char* string) {
-	glRasterPos3f(crdX(x, winWidth), crdY(y, winHeight), z);
-	for (const char* c = string; *c != '\0'; c++) {
-		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);  // Updates the position
-	}
-}
-
-void drawString(float x, float y, float z, char* string) {
-	glRasterPos3f(crdX(x, winWidth), crdY(y, winHeight), z);
-	for (char* c = string; *c != '\0'; c++) {
-		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);  // Updates the position
-	}
-}
-
-void drawString(float x, float y, float z, std::string string) {
-	glRasterPos3f(crdX(x, winWidth), crdY(y, winHeight), z);
-	for (int c = 0; string[c] != '\0'; c++) {
-		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, string[c]);  // Updates the position
-	}
-}
 
 void applyForces()
 {
@@ -148,7 +45,7 @@ void applyForces()
 			if (abs(deltay) < 10) deltay = (deltay > 0 ? 10 : -10);
 			Vector2d dist(deltax, deltay);
 
-			Force forceij(&dist, G * Bodies[i].getMass() * Bodies[j].getMass() / (pow(dist.module(), 2)));
+			Force forceij(&dist, G * Bodies[i].getMass() * Bodies[j].getMass() / (dist.module() * dist.module()));
 			forceij.normalize();
 			Bodies[i].applyForce(&forceij);
 
@@ -217,14 +114,14 @@ void renderScene()
 	}
 
 	glColor3f(0.1, 0.9, 0.1);
-	drawString(winWidth - 50, winHeight - 50, -1, std::to_string(fps));
+	drawString(win.w - 50, win.h - 50, std::to_string(fps));
 	glutSwapBuffers();
 }
 
 void changeSize(int _w, int _h)
 {
-	winWidth = _w * 2;
-	winHeight = _h * 2;
+	win.w = _w * 2;
+	win.h = _h * 2;
 	glViewport(0, 0, _w, _h);
 	//std::cout << "Width: " << _w << "\tHeight: " << _h << "\n";
 }
@@ -249,11 +146,12 @@ void processMouseMotion(int x, int y)
 
 int main(int argc, char** argv)
 {
+	p_winParams = &win;
 	// Инициализация GLUT и создание окна
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(0, 70);
-	glutInitWindowSize(winWidth, winHeight);
+	glutInitWindowSize(win.w, win.h);
 	glutCreateWindow("gravsim 400 bodies");
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.1, 0.1, 0.1, 1.0);
@@ -271,7 +169,7 @@ int main(int argc, char** argv)
 	std::tm* now = std::localtime(&t);
 	srand(now->tm_sec);
 
-	for (int i = 0; i < 400; i++)
+	for (int i = 0; i < BODY_AMOUNT; i++)
 	{
 		CosmicBody body(100 + rand() % 1700, 50 + rand() % 900, 1.9f, 4.5f, Vector2d{0, 0}, glColor{0.25f + rand() % 5000 / 10000.f, 0.25f + rand() % 5000 / 10000.f, 0.25f + rand() % 5000 / 10000.f}, glColor{0.25f + rand() % 5000 / 10000.f, 0.25f + rand() % 5000 / 10000.f, 0.25f + rand() % 5000 / 10000.f});
 		//Vector2d{-5.f + (rand() % 1000) / 100.f, -5.f + (rand() % 1000) / 100.f}

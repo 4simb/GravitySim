@@ -114,6 +114,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>D:\VS Projects\OpenGL\GravitySim\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;glut32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -153,6 +154,10 @@
   <ItemGroup>
     <ClCompile Include="CosmicBody.cpp" />
     <ClCompile Include="Force.cpp" />
+    <ClCompile Include="GravitySimGraphics.cpp" />
+    <ClCompile Include="GravitySimGraphics.h" />
+    <ClCompile Include="GravitySimMath.cpp" />
+    <ClCompile Include="GravitySimMath.h" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Vector2d.cpp" />
   </ItemGroup>

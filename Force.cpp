@@ -28,15 +28,15 @@ void Force::setValue(float _value)
 
 void Force::normalize()
 {
-	float mod = module() / m_value;
-	//m_x /= mod;
-	//m_y /= mod;
-	if (mod == 0) {
+	float forceModule = this->module();
+	
+	if (forceModule == 0) {
 		setX(0);
 		setY(0);
 		return;
 	}
 
+	float mod = forceModule / m_value;
 	setX(getX() / mod);
 	setY(getY() / mod);
 }
